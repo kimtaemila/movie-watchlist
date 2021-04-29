@@ -1,0 +1,56 @@
+{% extends 'base_layout.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ user.username }} | Profile{% endblock %}
+
+{% block content %}
+<div id="content" class="colM">
+    <div id="container">
+        <div id="inline-flex">
+            <div class="info">
+                <h1><strong>{{ user|display_as:'fullname'|upper }}'s PROFILE</strong></h1>
+                <table>
+                    <caption><strong>Details</strong></caption>
+                    <tbody>
+                        <tr>
+                            <th>First name:</th>
+                            <td>{{ user.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last name:</th>
+                            <td>{{ user.last_name }}</td>
+                        </tr>
+                        <th>Username:</th>
+                        <td>{{ user.username }}</td>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date joined:</th>
+                            <td>{{ user.date_joined }}</td>
+                        </tr>
+                        <tr>
+                            <th>Premium info:</th>
+                            {% if user.userprofile.is_paid %}
+                            <td>Premium user</td>
+                            {% else %}
+                            <td>Free user | <a href="{% url 'myapp:donate' %}">Buy premium</a> for only $0.99.</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h1>Playlists</h1>
+                <div id="playlists">
+                    {% for playlist in playlists %}
+                    <a href="{% url 'myapp:playlistdetails' slug=playlist.slug %}">{{ playlist.title }}</a>&nbsp;<br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base_layout.html' %}
+{% load custom_filters %}
+
+{% block title %}Movie details{% endblock %}
+
+{% block content %}
+<div id="content" class="colM">
+    <div id="container">
+        <div id="inline-flex">
+            <div class="info">
+
+                <table>
+                    <caption>🎬 {{ movie.title }}</caption>
+                    <tbody>
+                        <tr>
+                            <th>Release Date:</th>
+                            <td>{{ movie.releasedate }}</td>
+                        </tr>
+                        <tr>
+                            <th>Language:</th>
+                            <td>{{ movie|display_as:'language' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description:</th>
+                            {% if movie.description == '' %}
+                            <td>N/A</td>
+                            {% else %}
+                            <td>{{ movie.description }}</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% if user.is_authenticated %}
+            <div class="add-to-playlist">
+                <h1>Add to playlists: </h1>
+                <div id="playlists">
+                    {% for playlist in playlists %}
+                    <form id="addtoplaylist-link"
+                        action="{% url 'myapp:addtoplaylist' playlist_slug=playlist.slug movie_slug=movie.slug %}"
+                        method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="{{ playlist.title }}"
+                            onclick="return alert ('Movie has been added to {{ playlist.title }}')">
+                    </form>&nbsp;
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock%}

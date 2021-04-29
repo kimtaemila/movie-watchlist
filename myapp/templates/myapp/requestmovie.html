@@ -1,0 +1,33 @@
+{% extends 'base_layout.html' %}
+
+{% block title %} Make Request {% endblock %}
+
+{% block content %}
+    <div id="content" class="colM">
+        <h1>Make Request</h1>
+
+        <div id="content-main">
+            <form id="requestmovie_form" action="{% url 'myapp:requestmovie' %}" method="POST">
+                {% csrf_token %}
+                <!-- {{ form }} -->
+                <div>
+                    <fieldset class="module aligned">
+                        {% for field in form %}
+                        <div class="form-row">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small style="color: grey">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <p style="color: red">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </fieldset>
+                    <input type="submit" value="Request" onclick="return confirm('Press \'OK\' to confirm your request.')">
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

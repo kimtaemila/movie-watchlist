@@ -1,0 +1,88 @@
+{% extends 'base_layout.html' %}
+{% load custom_filters %}
+
+{% block title %} Make Request {% endblock %}
+
+{% block content %}
+<div id="content" class="colM">
+    <div id="content-main">
+        <div class="app-auth module">
+            {% if user.is_staff %}
+            <table>
+                <caption><strong>All requests</strong></caption>
+                <tbody>
+                    <tr class="model-group">
+                        <th scope="row">Title</th>
+                        <th scope="row">Released date</th>
+                        <th scope="row">Language</th>
+                        <th scope="row">Requested by</th>
+                        <th scope="row">Status</th>
+                        <th scope="row">Accepted by</th>
+                        <th scope="row">Actions</th>
+                    </tr>
+                    {% for request in requests %}
+                    <tr class="model-group">
+                        <th scope="row">{{ request.movietitle }}</th>
+                        <td scope="row">{{ request.releasedate }}</td>
+                        <td scope="row">{{ request|display_as:'language' }}</td>
+                        <td scope="row">{{ request.requestedby }}</td>
+                        <td scope="row">
+                            {% if not request.accepted and not request.rejected %}
+                            Pending
+                            {% elif request.accepted %}
+                            Accepted
+                            {% endif %}
+                        </td>
+                        <td scope="row">{{ request.acceptedby }}</td>
+                        <td scope="row">
+                            <div class="action">
+                                {% if not request.accepted and not request.rejected %}
+                                <form action="{% url 'myapp:requests' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                                    <!-- <input type="submit" name="action" value="✔️"> -->
+                                    <button type="submit" name="action" value="✔️">✔️</button>
+                                    <!-- <input type="submit" name="action" value="❌" onclick="return confirm('Click \'OK\' to delete the request.')"> -->
+                                    <button type="submit" name="action" value="❌"
+                                        onclick="return confirm('Click \'OK\' to delete the request.')">❌</button>
+                                </form>
+                                {% elif request.accepted %}
+                                ✔️
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <table>
+                <caption><strong>All requests of {{ user|display_as:'fullname' }}</strong></caption>
+                <tbody>
+                    <tr class="model-group">
+                        <th scope="row">Title</th>
+                        <th scope="row">Released date</th>
+                        <th scope="row">Language</th>
+                        <th scope="row">Status</th>
+                        <th scope="row">Accepted by</th>
+                    </tr>
+                    {% for request in requests %}
+                    <tr class="model-group">
+                        <th scope="row">{{ request.movietitle }}</th>
+                        <td scope="row">{{ request.releasedate }}</td>
+                        <td scope="row">{{ request|display_as:'language' }}</td>
+                        <td scope="row">
+                            {% if not request.accepted and not request.rejected %}
+                            Pending
+                            {% elif request.accepted %}
+                            Accepted
+                            {% endif %}
+                        </td>
+                        <td scope="row">{{ request.acceptedby }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    {% endblock %}

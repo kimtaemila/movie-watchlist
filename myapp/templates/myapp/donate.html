@@ -1,0 +1,22 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}Donate{% endblock %}
+
+{% block content %}
+
+    {% if user.userprofile.is_paid %}
+        <p>Congratulations! You are a Premium user.</p>
+        <p>Thank you for your donation.</p>
+    {% else %}
+        <div>
+            <h1>Payment confirmation</h1>
+            <form action="{% url 'myapp:donate' %}" id="site-form" method="post">
+                {% csrf_token %}
+                <!-- {{ form }} -->
+                <input type="hidden" name="payment" value="paid">
+                <input type="submit" value="Confirm payment" onclick="return confirm('Donate at your own risk!\nPayment is not Refundable.');">
+            </form>
+        </div>
+    {% endif %}
+
+{% endblock %}

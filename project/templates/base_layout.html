@@ -1,0 +1,85 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{% static 'images/film_movie.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'nav_sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'jquery-ui.css' %}">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#id_releasedate").datepicker();
+        });
+    </script>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    <!-- Container -->
+    <div id="container">
+        <!-- Header -->
+        <div id="header">
+            <div id="branding">
+                <h1 id="site-name"><a href="{% url 'myapp:home' %}"><img
+                            src="{% static 'images/film-frames-apple.png' %}" height=40px width=40px>
+                        Movie Watchlist</a></h1>
+            </div>
+
+            <div id="user-tools">
+                {% if user.is_authenticated %}
+                <div class="inline-flex">Welcome,&nbsp<a href="{% url 'myapp:userprofile' %}"><strong>{{ user.username }}</strong></a>
+                    <form id="logout-link" action="{% url 'myapp:logout' %}" method="post">
+                        {% csrf_token %}
+                        &nbsp<button type="submit">Logout</button>
+                    </form>
+                </div>
+                <div>
+                    <!-- if user is admin/staff, can add new movie -->
+                    {% if user.is_staff %}
+                    <a href="{% url 'myapp:createmovie' %}">Add Movie</a>
+                    {% endif %}
+
+                    <!-- if user is premium, can create new playlist -->
+                    <!-- if user is premium, can request a movie -->
+                    {% if user.userprofile.is_paid %}
+                    &nbsp|&nbsp<a href="{% url 'myapp:createlist' %}">New Playlist</a>
+                    {% endif %}
+                    {% if user.userprofile.is_paid and not user.is_stuff %}
+                    &nbsp|&nbsp<a href="{% url 'myapp:requests' %}">Check Requests</a>
+                    &nbsp|&nbsp<a href="{% url 'myapp:requestmovie' %}">Request a Movie</a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <a href="{% url 'myapp:login' %}">Login</a>
+                &nbsp|&nbsp<a href="{% url 'myapp:signup' %}">Signup</a>
+                {% endif %}
+            </div>
+
+        </div>
+        <!-- END Header -->
+        <!-- Navbar -->
+        <div class="breadcrumbs">
+            <form action="{% url 'myapp:search' %}" method="POST">
+                {% csrf_token %}
+                <input type="search" placeholder="Search" name="searched">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <!-- END Navbar -->
+        <div class="main shifted" id="main">
+            <!-- Content -->
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+    <!-- END Container -->
+</body>
+
+</html>

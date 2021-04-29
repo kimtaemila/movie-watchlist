@@ -1,0 +1,27 @@
+{% extends 'base_layout.html' %}
+{% load custom_filters %}
+
+{% block title %}Playlist details{% endblock %}
+
+<h5>⇒ TODO: let users add/remove movie to playlist.</h5>
+
+{% block content %}
+    <div id="container">
+        <h1>{{ user.username }}'s <strong>{{ playlist.title }}</strong> Playlist</h1>
+        {% if playlist.description != '' %}
+            <p>{{ user.username }}'s {{ playlist.description }} Playlist</p>
+        {% endif %}
+        {% for movie in movies %}
+            <div class="set">
+                <form id="removefromplaylist-link"
+                    action="{% url 'myapp:removefromplaylist' playlist_slug=playlist.slug movie_slug=movie.slug %}" 
+                    method="post">
+                    {% csrf_token %}
+                    <!-- {{ form }} -->
+                    <button type="submit" style="border:None; background:None;" name="remove">❌</button>&nbsp&nbsp
+                </form>
+                <h4>{{movie.releasedate|date:'Y'}} | <a href="{% url 'myapp:moviedetails' slug=movie.slug %}">{{movie.title}}</a></h4>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

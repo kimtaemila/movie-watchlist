@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{% static 'images/film_movie.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+    <link rel="stylesheet" href="{% static 'nav_sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="{% static 'responsive.css' %}">
+    <script src="{% static 'nav_sidebar.js' %}"></script>
+    <title>Signup | Movie Watchlist</title>
+</head>
+
+<body class="login">
+    <!-- Container -->
+    <div id="container">
+        <!-- Header -->
+        <div id="header">
+            <div id="branding">
+                <h1 id="site-name">
+                    <a href="{% url 'myapp:home' %}"><img src="{% static 'images/film-frames-apple.png' %}" height=50px width=50px>&nbsp;Movie Watchlist</a>
+                </h1>
+            </div>
+        </div>
+        <!-- END Header -->
+        <div class="main shifted">
+            <div class="content">
+                <!-- Content -->
+                <div id="content" class="colM">
+                    <div id="content-main">
+                        <form action="{% url 'myapp:signup' %}" method="post" id="login-form">
+                            {% csrf_token %}
+                            <!-- {{ form }} -->
+                            {% for field in form %}
+                            <div class="form-row">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.help_text %}
+                                <small style="color: grey">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% for error in field.errors %}
+                                <p style="color: red">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+
+                            {% if request.GET.next %}
+                            <input type="hidden" name="next" value="{{ request.GET.next }}">
+                            {% endif %}
+                            <div class="submit-row">
+                                <input type="submit" value="Sign up">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- END Content -->
+                <div id="footer"></div>
+            </div>
+        </div>
+    </div>
+</body>

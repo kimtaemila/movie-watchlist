@@ -1,0 +1,40 @@
+{% extends 'base_layout.html' %}
+{% load custom_filters %}
+
+{% block title %} Movie collection {% endblock %}
+
+{% block content %}
+<div class="content" class="colM">
+    <h1>Movie Collections</h1>
+
+    <!-- Show only the movies released in the future -->
+    <div id="container">
+        <div id="inline-flex">
+            <div>
+                <h2>Realeased</h2>
+                <div class="divScroll">
+                    {% for movie in movies %}
+                    {% if movie.is_released %}
+                    <h4> {{movie.releasedate|date:'Y'}} | <a
+                            href="{% url 'myapp:moviedetails' slug=movie.slug %}">{{movie.title}}</a>
+                    </h4>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <h2>Coming soon</h2>
+                <div class="divScroll">
+                    {% for movie in movies %}
+                    {% if not movie.is_released %}
+                    <h4> {{movie.releasedate|date:'Y'}} ({{movie.releasedate|date:'M'}}) |
+                        <a href="{% url 'myapp:moviedetails' slug=movie.slug %}">{{movie.title}}</a>
+                    </h4>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
