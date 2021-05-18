@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import date
+import re
 
 LANGUAGE_CHOICES = (
     ('ar-AE', 'Arabic (United Arab Emirates)'),
@@ -22,25 +23,38 @@ LANGUAGE_CHOICES = (
 
 
 class Movie(models.Model):
+    id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=128,
                              blank=False,
                              verbose_name='Title')
-    slug = models.SlugField(default='',
-                            verbose_name='slug')
-    m_type = models.CharField(max_length=32,
-                              default='Movie',
-                              verbose_name='Type')
     releasedate = models.DateField(blank=False,
                                    verbose_name='Release date')
+    slug = models.SlugField(blank=True,
+                            verbose_name='slug')
     language = models.CharField(max_length=32,
                                 default='en-US',
                                 choices=LANGUAGE_CHOICES,
                                 verbose_name='Language')
-    description = models.TextField(blank=True)
+    m_type = models.CharField(max_length=32,
+                              default='Movie',
+                              verbose_name='Type')
+    description = models.TextField(max_length=512,
+                                   default='N/A',
+                                   verbose_name='Description')
 
     def __str__(self):
         year = self.releasedate.year
         return f'{year} | {self.title}'
+
+    def save(self, *args, **kwargs):
+        title = self.title
+        releasedate = self.releasedate
+
+        slug_t = re.sub(r'&', '-and-', title.lower())
+        slug_t = re.sub(r'[\s\W-]+', '-', slug_t)
+        self.slug = f'{releasedate.year}-{slug_t}'
+
+        super(Movie, self).save(*args, **kwargs)
 
     def is_released(self):
         now = date.today()
@@ -52,6 +66,7 @@ class Movie(models.Model):
 
 
 class Playlist(models.Model):
+    id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=32,
                              verbose_name='Title',)
     slug = models.SlugField(default='',
@@ -66,14 +81,25 @@ class Playlist(models.Model):
                                   on_delete=models.CASCADE,
                                   verbose_name='Created by',)
     description = models.TextField(blank=True,
+                                   default='N/A',
                                    max_length=512,
                                    verbose_name='Description')
 
     def __str__(self):
         return f'User: {self.createdby.username} | Title: {self.title}'
 
+    def save(self, *args, **kwargs):
+        user = self.createdby
+        title = self.title
+        slug_t = re.sub(r'&', '-and-', title)
+        slug_t = re.sub(r'[\s\W-]+', '', slug_t)
+        self.slug = f'{user.username}-{slug_t}'
+
+        super(Playlist, self).save(*args, **kwargs)
+
 
 class UserProfile(models.Model):
+    id = models.BigAutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_paid = models.BooleanField(default=False,
                                   help_text='Designates weather this user is premium',
@@ -84,6 +110,7 @@ class UserProfile(models.Model):
 
 
 class RequestMovie(models.Model):
+    id = models.BigAutoField(primary_key=True)
     movietitle = models.CharField(max_length=128,
                                   blank=False,
                                   verbose_name='Movie title')

@@ -23,18 +23,18 @@ def anonymous_required(function=None, redirect_url=None):
     return actual_decorator
 
 
-def free_user_required(function=None, redirect_url=None):
-    """
-        Decorator for views that checks that any user is not logged in, redirecting
-        to the log-in page if necessary.
-    """
-    actual_decorator = user_passes_test(
-        lambda u: not u.userprofile.is_paid,
-        login_url=redirect_url,
-    )
-    if function:
-        return actual_decorator(function)
-    return actual_decorator
+# def free_user_required(function=None, redirect_url=None):
+#     """
+#         Decorator for views that checks that any user is not logged in, redirecting
+#         to the log-in page if necessary.
+#     """
+#     actual_decorator = user_passes_test(
+#         lambda u: not u.userprofile.is_paid,
+#         login_url=redirect_url,
+#     )
+#     if function:
+#         return actual_decorator(function)
+#     return actual_decorator
 
 
 # Main views
@@ -63,7 +63,6 @@ def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
-            # Log the user in
             user = form.get_user()
             login(request, user)
             if 'next' in request.POST:
@@ -133,10 +132,6 @@ def userprofile(request):
     context = {
         'playlists': playlists,
     }
-
-    # if request.method == 'POST':
-    #     return render(request, 'myapp/userprofile.html', context)
-
     return render(request, 'myapp/userprofile.html', context)
 
 
@@ -192,10 +187,7 @@ def createlist(request):
         form = forms.CreatePlaylistForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
-            user = request.user
-            title = instance.title
-            instance.slug = f'{user}-{title}'
-            instance.createdby = user
+            instance.createdby = request.user
             instance.save()
             return redirect('myapp:home')
     else:
